@@ -8,7 +8,7 @@ import javax.validation.constraints.Size;
 public class Employer extends AbstractEntity {
     @NotNull
     @Size(max = 128)
-    String location;
+    private String location;
 
     public Employer() {
     }
