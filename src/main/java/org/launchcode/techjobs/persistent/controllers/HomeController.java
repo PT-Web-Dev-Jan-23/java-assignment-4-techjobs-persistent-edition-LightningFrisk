@@ -12,7 +12,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by LaunchCode
@@ -40,21 +40,25 @@ public class HomeController {
     @GetMapping("add")
     public String displayAddJobForm(Model model) {
         model.addAttribute("title", "Add Job");
+        model.addAttribute("employers", employerRepository.findAll());
         model.addAttribute(new Job());
         return "add";
     }
 
     @PostMapping("add")
     public String processAddJobForm(@ModelAttribute @Valid Job newJob,
-                                       Errors errors, Model model, @RequestParam int employerId, @RequestParam List<Integer> skills) {
+                                       Errors errors, Model model, @RequestParam int employerId) {//, @RequestParam List<Integer> skills
 
         if (errors.hasErrors()) {
             model.addAttribute("title", "Add Job");
+            model.addAttribute(newJob); //use the variables given
             return "add";
         }
 
-        List employers = (List<Employer>) employerRepository.findAll();
-        model.addAttribute("employers", employers);
+        Optional<Employer> result = employerRepository.findById(employerId);
+        Employer employer = result.get(); //TODO: this might break if no employer given, but how the page is laid out I don't think that can happen.
+        newJob.setEmployer(employer); //TODO: this might nullpointer if above happened, need to figure out how to fix?
+        jobRepository.save(newJob);
 
         return "redirect:";
     }
