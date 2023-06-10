@@ -51,7 +51,7 @@ public class EmployerController {
         Optional optEmployer = employerRepository.findById(employerId);
         if (optEmployer.isPresent()) {
             Employer employer = (Employer) optEmployer.get();
-            model.addAttribute("employer", employer);
+            model.addAttribute("employer", employer); //hmm why do you not spit out the jobs the employers are associated with....
             return "employers/view";
         } else {
             return "redirect:../";
