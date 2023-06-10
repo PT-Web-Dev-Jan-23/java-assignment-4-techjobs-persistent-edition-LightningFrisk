@@ -38,9 +38,10 @@ public class ListController {
     }
 
     @RequestMapping("")
-    public String list(Model model) {
+    public String list(Model model) { //something it doesn't want to let me add jobs the same way I've added employers/skills here
         model.addAttribute("employers", employerRepository.findAll());
         model.addAttribute("skills",skillRepository.findAll());
+        //model.addAttribute("jobs", jobRepository.findAll()); //throws a null pointer exception but this need to be here for view to work properly pretty sure
         return "list";
     }
 
