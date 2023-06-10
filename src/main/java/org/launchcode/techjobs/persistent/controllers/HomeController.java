@@ -2,6 +2,7 @@ package org.launchcode.techjobs.persistent.controllers;
 
 import org.launchcode.techjobs.persistent.models.Employer;
 import org.launchcode.techjobs.persistent.models.Job;
+import org.launchcode.techjobs.persistent.models.Skill;
 import org.launchcode.techjobs.persistent.models.data.EmployerRepository;
 import org.launchcode.techjobs.persistent.models.data.JobRepository;
 import org.launchcode.techjobs.persistent.models.data.SkillRepository;
@@ -12,6 +13,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -38,16 +40,17 @@ public class HomeController {
     }
 
     @GetMapping("add")
-    public String displayAddJobForm(Model model) {
+    public String displayAddJobForm(Model model) { //reminder dummy, this handles what you actually see on screen.
         model.addAttribute("title", "Add Job");
         model.addAttribute("employers", employerRepository.findAll());
+        model.addAttribute("skills",skillRepository.findAll());
         model.addAttribute(new Job());
         return "add";
     }
 
-    @PostMapping("add")
+    @PostMapping("add") // this only affects what you do on hte page
     public String processAddJobForm(@ModelAttribute @Valid Job newJob,
-                                       Errors errors, Model model, @RequestParam int employerId) {//, @RequestParam List<Integer> skills
+                                       Errors errors, Model model, @RequestParam int employerId, @RequestParam List<Integer> skills) {
 
         if (errors.hasErrors()) {
             model.addAttribute("title", "Add Job");
@@ -55,9 +58,13 @@ public class HomeController {
             return "add";
         }
 
-        Optional<Employer> result = employerRepository.findById(employerId);
-        Employer employer = result.get(); //TODO: this might break if no employer given, but how the page is laid out I don't think that can happen.
-        newJob.setEmployer(employer); //TODO: this might nullpointer if above happened, need to figure out how to fix?
+        Optional<Employer> employerResult = employerRepository.findById(employerId);
+        if(employerResult.isPresent()) {
+            Employer employer = employerResult.get();
+            newJob.setEmployer(employer);
+        }
+        List<Skill> skillObjs = (List<Skill>) skillRepository.findAllById(skills);
+        newJob.setSkills(skillObjs);
         jobRepository.save(newJob);
 
         return "redirect:";

@@ -1,6 +1,7 @@
 package org.launchcode.techjobs.persistent.models;
 
 import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import java.util.List;
 
@@ -8,6 +9,8 @@ import java.util.List;
 public class Job extends AbstractEntity{
     @ManyToOne
     private Employer employer;
+
+    @ManyToMany
     private List<Skill> skills;
 
     public Job() {
